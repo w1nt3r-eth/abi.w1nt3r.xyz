@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import Footer from '../../components/Footer';
 import HeadMeta from '../../components/HeadMeta';
+import qs from 'querystring';
 
 type Signature = {
   id: number;
@@ -134,7 +135,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params, re
 
   const code = await provider.getCode(address);
   const selectors = selectorsFromBytecode(code);
-  const signatures = await Promise.all(selectors.map(fetchSignatures));
+
+  // const signatures = await Promise.all(selectors.map(fetchSignatures4BD));
+  const signatures = await fetchSignaturesSamczsun(selectors);
 
   res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=3600000');
 
@@ -167,8 +170,26 @@ function exportToCopyAs(address: string, signatures: Signature[][]) {
   }
 }
 
-async function fetchSignatures(hex: string): Promise<Signature[]> {
+async function fetchSignatures4BD(hex: string): Promise<Signature[]> {
   const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${hex}`);
   const data = await response.json();
   return data.results;
+}
+
+async function fetchSignaturesSamczsun(hexes: string[]): Promise<Signature[][]> {
+  const response = await fetch(`https://sig.eth.samczsun.com/api/v1/signatures?${qs.stringify({ function: hexes })}`);
+  const data = await response.json();
+  if (!data.ok) {
+    throw new Error(`Failed to fetch signatures: ${JSON.stringify(data)}`);
+  }
+
+  return hexes.map((hex, id) =>
+    (data.result.function[hex] || []).map((record: any) => ({
+      id,
+      created_at: '',
+      text_signature: record.name,
+      hex_signature: hex,
+      bytes_signature: '',
+    }))
+  );
 }
