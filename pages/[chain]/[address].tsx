@@ -121,7 +121,11 @@ function SelectorWithSignatures(props: { selector: string; signatures: Signature
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ params, res }) => {
   const address = params?.address as string;
-  const chain = params?.chain as string;
+  let chain: string | number = params?.chain as string;
+
+  if (chain === 'mainnet') {
+    chain = 1;
+  }
 
   const provider = new ethers.providers.AlchemyProvider(
     isNaN(Number(chain)) ? chain : Number(chain),
