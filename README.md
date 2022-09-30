@@ -7,7 +7,13 @@ Powered by <a href="https://github.com/shazow/whatsabi">@shazow/whatsabi</a> and
 
 Copy `.env.example` to `.env` and add your Alchemy API key.
 
-Then, run the development server:
+To begin, install the npm modules. `cd` into `abi.w1nt3r.xyz` and run:
+
+```
+npm i
+```
+
+Once the npm modules are installed, run the development server:
 
 ```bash
 npm run dev
