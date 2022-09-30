@@ -120,9 +120,11 @@ function SelectorWithSignatures(props: { selector: string; signatures: Signature
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ params, res }) => {
-  const provider = new ethers.providers.AlchemyProvider('mainnet', process.env.ALCHEMY_API_KEY);
-
   const address = params?.address as string;
+  const chain = params?.chain as string;
+
+  const provider = new ethers.providers.AlchemyProvider(chain, process.env.ALCHEMY_API_KEY);
+
   const code = await provider.getCode(address);
   const selectors = selectorsFromBytecode(code);
   const signatures = await Promise.all(selectors.map(fetchSignatures));
