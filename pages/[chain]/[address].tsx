@@ -123,7 +123,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params, re
   const address = params?.address as string;
   const chain = params?.chain as string;
 
-  const provider = new ethers.providers.AlchemyProvider(chain, process.env.ALCHEMY_API_KEY);
+  const provider = new ethers.providers.AlchemyProvider(
+    isNaN(Number(chain)) ? chain : Number(chain),
+    process.env.ALCHEMY_API_KEY
+  );
 
   const code = await provider.getCode(address);
   const selectors = selectorsFromBytecode(code);
