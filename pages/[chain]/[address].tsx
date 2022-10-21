@@ -128,6 +128,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params, re
     chain = 1;
   }
 
+  if (!process.env.ALCHEMY_API_KEY) {
+    console.warn('ALCHEMY_API_KEY not set');
+  }
+
   const provider = new ethers.providers.AlchemyProvider(
     isNaN(Number(chain)) ? chain : Number(chain),
     process.env.ALCHEMY_API_KEY
