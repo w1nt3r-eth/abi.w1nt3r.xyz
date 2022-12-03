@@ -10,7 +10,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return {
     redirect: {
       // TODO: Search for the contract across different EVM networks
-      destination: `/mainnet/${address}`,
+      destination: `/contract/${address}`,
       permanent: true,
     },
   };

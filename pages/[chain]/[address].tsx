@@ -122,22 +122,20 @@ function SelectorWithSignatures(props: { selector: string; signatures: Signature
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ params, res }) => {
   const address = params?.address as string;
-  let chain: string | number = params?.chain as string;
+  const networks_rpc: { [name: string]: string } = { "eth": "https://rpc.ankr.com/eth", "avax": "https://api.avax.network/ext/bc/C/rpc", "bsc": "https://bsc-dataseed1.binance.org/", "matic": "https://polygon-rpc.com" };
+  let code = "";
 
-  if (chain === 'mainnet') {
-    chain = 1;
+  // for each network, connect to the provider and get the bytecode
+  for (const [chain, network] of Object.entries(networks_rpc)) {
+    const provider = new ethers.providers.JsonRpcProvider(network);
+    code = await provider.getCode(address);
+
+    // if the bytecode is not empty, we found the contract
+    if (code !== '0x') {
+      break
+    }
   }
 
-  if (!process.env.ALCHEMY_API_KEY) {
-    console.warn('ALCHEMY_API_KEY not set');
-  }
-
-  const provider = new ethers.providers.AlchemyProvider(
-    isNaN(Number(chain)) ? chain : Number(chain),
-    process.env.ALCHEMY_API_KEY
-  );
-
-  const code = await provider.getCode(address);
   const selectors = selectorsFromBytecode(code);
 
   // const signatures = await Promise.all(selectors.map(fetchSignatures4BD));
