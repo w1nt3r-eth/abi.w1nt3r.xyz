@@ -17,6 +17,7 @@ type Signature = {
 
 type Props = {
   address: string;
+  explorer: string;
   selectors: string[];
   signatures: Signature[][];
   copyAs: {
@@ -28,15 +29,15 @@ type Props = {
 export default function ABI(props: Props) {
   return (
     <div className="main">
-      <Link href="/">
-        <a className="back">← Back</a>
+      <Link href="/" className="back">
+        ← Back
       </Link>
       <HeadMeta title={`Signatures for ${props.address}`} description={`ABI signatures for ${props.address}`} />
       <h1>
         Signatures for{' '}
-        <a href={`https://etherscan.io/address/${props.address}`} target="_blank" rel="noreferrer">
+        <Link href={`${props.explorer}${props.address}`} target="_blank" rel="noreferrer">
           {props.address}
-        </a>
+        </Link>
       </h1>
       {props.signatures.map((signatures, i) => (
         <SelectorWithSignatures key={i} selector={props.selectors[i]} signatures={signatures} />
@@ -122,13 +123,23 @@ function SelectorWithSignatures(props: { selector: string; signatures: Signature
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ params, res }) => {
   const address = params?.address as string;
-  const networks_rpc: { [name: string]: string } = { "eth": "https://rpc.ankr.com/eth", "avax": "https://api.avax.network/ext/bc/C/rpc", "bsc": "https://bsc-dataseed1.binance.org/", "matic": "https://polygon-rpc.com" };
+
+  const networks: { [name: string]: string } = { 
+    "https://etherscan.io/address/": "https://eth.public-rpc.com/", 
+    "https://snowtrace.io/address/": "https://avalanche.public-rpc.com/", 
+    "https://bscscan.com/address/": "https://bscrpc.com", 
+    "https://polygonscan.com/address/": "https://polygon-rpc.com"
+  
+  };
+
   let code = "";
+  let explorer = "";
 
   // for each network, connect to the provider and get the bytecode
-  for (const [chain, network] of Object.entries(networks_rpc)) {
-    const provider = new ethers.providers.JsonRpcProvider(network);
+  for (const [exp, net] of Object.entries(networks)) {
+    const provider = new ethers.providers.JsonRpcProvider(net);
     code = await provider.getCode(address);
+    explorer = exp;
 
     // if the bytecode is not empty, we found the contract
     if (code !== '0x') {
@@ -146,6 +157,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params, re
   return {
     props: {
       address,
+      explorer,
       selectors,
       signatures,
       copyAs: exportToCopyAs(address, signatures),

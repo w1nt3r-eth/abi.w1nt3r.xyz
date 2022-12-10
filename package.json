@@ -1,5 +1,5 @@
 {
-  "name": "whatsabi",
+  "name": "my-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,24 +8,17 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "prettier": {
-    "singleQuote": true,
-    "printWidth": 120
-  },
   "dependencies": {
-    "@shazow/whatsabi": "^0.1.0",
-    "ethers": "^5.7.1",
-    "next": "12.3.1",
-    "prettier": "^2.7.1",
+    "@shazow/whatsabi": "github:shazow/whatsabi",
+    "@types/node": "18.11.12",
+    "@types/react": "18.0.26",
+    "@types/react-dom": "18.0.9",
+    "eslint": "8.29.0",
+    "eslint-config-next": "13.0.6",
+    "next": "13.0.6",
+    "nextjs-progressbar": "^0.0.16",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
-  },
-  "devDependencies": {
-    "@types/node": "18.7.23",
-    "@types/react": "18.0.21",
-    "@types/react-dom": "18.0.6",
-    "eslint": "8.24.0",
-    "eslint-config-next": "12.3.1",
-    "typescript": "4.8.4"
+    "react-dom": "18.2.0",
+    "typescript": "4.9.4"
   }
 }

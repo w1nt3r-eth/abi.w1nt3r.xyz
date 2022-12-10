@@ -1,20 +1,17 @@
-import type { NextPage } from 'next';
 import Footer from '../components/Footer';
 import HeadMeta from '../components/HeadMeta';
+import Link from 'next/link'
 
-// TODO: Using Next's <Link> component for navigation is not showing loading state
-/* eslint-disable @next/next/no-html-link-for-pages */
-
-const Home: NextPage = () => {
+export default function Home() {
   return (
     <div className="container">
-      <HeadMeta title="ABI for unverified contracts" description="Guess ABI of any Ethereum contract" />
+      <HeadMeta title="ABI for unverified contracts" description="Guess ABI of any EVM contract" />
 
       <main className="main">
         <h1 className="title">Get ABI for unverified contracts</h1>
 
         <p className="description">
-          Guess ABI of any Ethereum contract, even if it is not verified on Etherscan. Works by analyzing the bytecode,
+          Guess ABI of any EVM contract, even if its not verified. Works by analyzing the bytecode,
           extracting selectors from PUSH4/JUMPI instructions and comparing them to known ABI signatures.
         </p>
 
@@ -34,11 +31,11 @@ const Home: NextPage = () => {
         </form>
         <p className="description">Or try some examples:</p>
         <p className="description">
-          <a href="/mainnet/0x7a250d5630b4cf539739df2c5dacb4c659f2488d">0x7a250d5630b4cf539739df2c5dacb4c659f2488d</a>
+          <Link href="/mainnet/0x7a250d5630b4cf539739df2c5dacb4c659f2488d">0x7a250d5630b4cf539739df2c5dacb4c659f2488d</Link>
           <br />
-          <a href="/mainnet/0x2d8a1e139cb15319b1f325eb917c9c704f45db7c">0x2d8a1e139cb15319b1f325eb917c9c704f45db7c</a>
+          <Link href="/mainnet/0x2d8a1e139cb15319b1f325eb917c9c704f45db7c">0x2d8a1e139cb15319b1f325eb917c9c704f45db7c</Link>
           <br />
-          <a href="/mainnet/0xaE9C73fd0Fd237c1c6f66FE009d24ce969e98704">0xaE9C73fd0Fd237c1c6f66FE009d24ce969e98704</a>
+          <Link href="/mainnet/0xaE9C73fd0Fd237c1c6f66FE009d24ce969e98704">0xaE9C73fd0Fd237c1c6f66FE009d24ce969e98704</Link>
         </p>
 
         <Footer />
@@ -62,6 +59,4 @@ const Home: NextPage = () => {
       `}</style>
     </div>
   );
-};
-
-export default Home;
+}
