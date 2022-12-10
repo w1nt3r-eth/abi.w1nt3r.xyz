@@ -1,8 +1,8 @@
 export default function Footer() {
   return (
     <footer>
-      Made by <a href="https://twitter.com/w1nt3r_eth">@w1nt3r_eth</a>. Open source, see{' '}
-      <a href="https://github.com/w1nt3r-eth/abi.w1nt3r.xyz">GitHub</a>.<br />
+      <a href="https://github.com/w1nt3r-eth/abi.w1nt3r.xyz">Original</a> project forked by <a href="https://github.com/itasli">@itasli</a>, 
+      see <a href="https://github.com/itasli/evm-abi-finder">GitHub</a>.<br />
       Powered by <a href="https://github.com/shazow/whatsabi">@shazow/whatsabi</a> and{' '}
       <a href="https://sig.eth.samczsun.com/">Ethereum Signature Database</a>.
       <style jsx>{`
