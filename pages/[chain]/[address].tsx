@@ -132,7 +132,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params, re
     console.warn('ALCHEMY_API_KEY not set');
   }
 
-  const provider = new ethers.providers.AlchemyProvider(
+  const provider = new ethers.AlchemyProvider(
     isNaN(Number(chain)) ? chain : Number(chain),
     process.env.ALCHEMY_API_KEY
   );
@@ -162,10 +162,10 @@ function exportToCopyAs(address: string, signatures: Signature[][]) {
       .filter(Boolean)
       .map((text_signature) => `  function ${text_signature.replaceAll('[]', '[] calldata')}`);
 
-    const iface = new ethers.utils.Interface(functions);
+    const iface = new ethers.Interface(functions);
 
     return {
-      json: iface.format(ethers.utils.FormatTypes.json) as string,
+      json: iface.formatJson(),
       solidity: [`interface ABI_${address} {`, ...functions.map((f) => f + ' external;'), '}'].join('\n'),
     };
   } catch (error) {
