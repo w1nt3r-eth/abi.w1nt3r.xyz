@@ -140,8 +140,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params, re
   const code = await provider.getCode(address);
   const selectors = selectorsFromBytecode(code);
 
-  // const signatures = await Promise.all(selectors.map(fetchSignatures4BD));
-  const signatures = await fetchSignaturesSamczsun(selectors);
+  const signatures = await Promise.all(selectors.map(fetchSignatures4BD));
+  // const signatures = await fetchSignaturesSamczsun(selectors);
 
   res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=3600000');
 
@@ -175,7 +175,9 @@ function exportToCopyAs(address: string, signatures: Signature[][]) {
 }
 
 async function fetchSignatures4BD(hex: string): Promise<Signature[]> {
-  const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${hex}`);
+  const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${hex}`, {
+    headers: { Accept: 'application/json' },
+  });
   const data = await response.json();
   return data.results;
 }
