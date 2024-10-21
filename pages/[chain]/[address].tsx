@@ -149,7 +149,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params, re
   let errorMessage: null | string = null;
 
   try {
+    let timeIsUp = false;
+    setTimeout(() => (timeIsUp = true), 20_000);
     for (let batch = 0; batch < selectors.length; batch += 5) {
+      if (timeIsUp) {
+        throw new Error('Timed out while fetching signatures, some results are missing');
+      }
       const slice = selectors.slice(batch, batch + 5);
       const results = await Promise.all(slice.map(fetchSignatures4BD));
       signatures.push(...results);
@@ -158,6 +163,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params, re
   } catch (error) {
     console.error('Failed to fetch signatures:', error);
     errorMessage = (error as any).message;
+  }
+
+  while (signatures.length < selectors.length) {
+    signatures.push([]);
   }
 
   // const signatures = await fetchSignaturesSamczsun(selectors);
