@@ -171,7 +171,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params, re
 
   // const signatures = await fetchSignaturesSamczsun(selectors);
 
-  res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=3600000');
+  if (!errorMessage) {
+    res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=3600000');
+  }
 
   return {
     props: {
