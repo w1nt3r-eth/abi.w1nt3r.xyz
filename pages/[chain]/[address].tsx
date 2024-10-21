@@ -17,6 +17,7 @@ type Signature = {
 
 type Props = {
   address: string;
+  errorMessage: string | null;
   selectors: string[];
   signatures: Signature[][];
   copyAs: {
@@ -38,6 +39,7 @@ export default function ABI(props: Props) {
           {props.address}
         </a>
       </h1>
+      {props.errorMessage && <p className="error">{props.errorMessage}</p>}
       {props.signatures.map((signatures, i) => (
         <SelectorWithSignatures key={i} selector={props.selectors[i]} signatures={signatures} />
       ))}
@@ -62,6 +64,9 @@ export default function ABI(props: Props) {
         }
         button {
           padding: 0.5rem;
+        }
+        .error {
+          color: red;
         }
       `}</style>
     </div>
@@ -140,7 +145,21 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params, re
   const code = await provider.getCode(address);
   const selectors = selectorsFromBytecode(code);
 
-  const signatures = await Promise.all(selectors.map(fetchSignatures4BD));
+  const signatures = [] as Signature[][];
+  let errorMessage: null | string = null;
+
+  try {
+    for (let batch = 0; batch < selectors.length; batch += 5) {
+      const slice = selectors.slice(batch, batch + 5);
+      const results = await Promise.all(slice.map(fetchSignatures4BD));
+      signatures.push(...results);
+      await new Promise((resolve) => setTimeout(resolve, 1_000));
+    }
+  } catch (error) {
+    console.error('Failed to fetch signatures:', error);
+    errorMessage = (error as any).message;
+  }
+
   // const signatures = await fetchSignaturesSamczsun(selectors);
 
   res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=3600000');
@@ -150,6 +169,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ params, re
       address,
       selectors,
       signatures,
+      errorMessage,
       copyAs: exportToCopyAs(address, signatures),
     },
   };
@@ -175,10 +195,19 @@ function exportToCopyAs(address: string, signatures: Signature[][]) {
 }
 
 async function fetchSignatures4BD(hex: string): Promise<Signature[]> {
-  const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${hex}`, {
-    headers: { Accept: 'application/json' },
+  const response = await fetch(`https://www.4byte.directory/api/v1/signatures/?format=json&hex_signature=${hex}`, {
+    headers: {
+      Accept: 'application/json',
+      'User-Agent': 'abi.w1nt3r.xyz',
+    },
   });
-  const data = await response.json();
+
+  const text = await response.text();
+  if (!text.startsWith('{')) {
+    throw new Error(`Failed to fetch signatures: ${response.status} ${text}`);
+  }
+
+  const data = JSON.parse(text);
   return data.results;
 }
 
